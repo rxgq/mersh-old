@@ -3,26 +3,6 @@
 #include <string.h>
 #include <ctype.h>
 
-// typedef struct {
-//     char *name;
-//     enum Accessor access_modifier;
-//     enum Classifier item_modifier;
-// } Property;
-
-// typedef struct {
-//     char *name;
-//     enum Accessor access_modifier;
-//     enum Classifier item_modifier;
-//     char *return_type;
-// } Method;
-
-// enum Accessor {
-//     PUBLIC,
-//     PROTECTED,
-//     PRIVATE,
-//     PACKAGE
-// };
-
 enum TokenType {
     CLASS,
     IDENTIFIER,
@@ -70,18 +50,26 @@ void tokenize_line(Token *tokens, char *line, int *count) {
     }
 
     int curr = 0;
-    while (curr < len) {           // takes care of the aggregation o-- (picked up by isalnum)
+    while (curr < len) {          // handles aggregation ungracefully
         if (isalnum(tok[curr]) && (tok[curr != 0] && tok[curr + 1] != '-')) {
             int start = curr;
-            
+
             while (isalnum(tok[curr])) {
-                printf("%c", tok[curr]);
                 curr++;
             }
 
-            printf(" ");
-        }
+            tokens[*count].value = (char *)malloc((curr - start + 1) * sizeof(char));
+            strncpy(tokens[*count].value, tok + start, curr - start);
+            tokens[*count].value[curr - start] = '\0';
 
+            tokens[*count].name = (char *)malloc((curr - start + 1) * sizeof(char));
+            strncpy(tokens[*count].name, tok + start, curr - start);
+            tokens[*count].name[curr - start] = '\0';
+
+            tokens[*count].type = IDENTIFIER;
+
+            (*count)++;
+        }
         else { 
             switch (tok[curr]) {
                 case '<':
@@ -90,75 +78,88 @@ void tokenize_line(Token *tokens, char *line, int *count) {
                         tok[curr + 2] == '-' && 
                         tok[curr + 3] == '-'
                     ) {
-                        (* tokens).name = "Inheritance";
-                        (* tokens).value = "<|--";
-                        (* tokens).type = INHERITANCE;
-                        (* count)++;
+                        tokens[*count].name = strdup("Inheritance");
+                        tokens[*count].value = strdup("<|--");
+                        tokens[*count].type = INHERITANCE;
+                        (*count)++;
                         curr += 4;
                     }
-
                     break;
 
                 case '*':
-                    if (tok[curr + 1] == '-' && tok[curr + 2] == '-') {
-                        (* tokens).name = "Composition";
-                        (* tokens).type = COMPOSITION;
-                        (* tokens).value = "*--";
-                        (* count)++;
+                    if (curr + 3 < len && 
+                        tok[curr + 1] == '-' && 
+                        tok[curr + 2] == '-'
+                    ) {
+                        tokens[*count].name = strdup("Composition");
+                        tokens[*count].value = strdup("*--");
+                        tokens[*count].type = COMPOSITION;
+                        (*count)++;
                         curr += 3;
                     }
                     break;
 
                 case 'o':
-                    if (tok[curr + 1] == '-' && tok[curr + 2] == '-') {
-                        (* tokens).name = "Aggregation";
-                        (* tokens).type = AGGREGATION;
-                        (* tokens).value = "o--";
-                        (* count)++;
+                    if (curr + 3 < len && 
+                        tok[curr + 1] == '-' && 
+                        tok[curr + 2] == '-'
+                    ) {
+                        tokens[*count].name = strdup("Aggregation");
+                        tokens[*count].value = strdup("o--");
+                        tokens[*count].type = AGGREGATION;
+                        (*count)++;
                         curr += 3;
                     }
                     break;
 
                 case '-':
-                    if (tok[curr + 1] == '-' && tok[curr + 2] == '>') {
-                        (* tokens).name = "Association";
-                        (* tokens).type = ASSOCIATION;
-                        (* tokens).value = "-->";
-                        (* count)++;
+                    if (curr + 3 < len && 
+                        tok[curr + 1] == '-' && 
+                        tok[curr + 2] == '>'
+                    ) {
+                        tokens[*count].name = strdup("Association");
+                        tokens[*count].value = strdup("-->");
+                        tokens[*count].type = ASSOCIATION;
+                        (*count)++;
                         curr += 3;
                     }
-                    else if (tok[curr + 1] == '-') {
-                        (* tokens).name = "Link";
-                        (* tokens).type = LINK;
-                        (* tokens).value = "--";
-                        (* count)++;
+                    else if (curr + 2 < len && tok[curr + 1] == '-') {
+                        tokens[*count].name = strdup("Link");
+                        tokens[*count].value = strdup("--");
+                        tokens[*count].type = LINK;
+                        (*count)++;
                         curr += 2;
                     }
                     break;
+
                 case '.':
-                    if (tok[curr + 1] == '.' && tok[curr + 2] == '>') {
-                        (* tokens).name = "Dependency";
-                        (* tokens).type = DEPENDENCY;
-                        (* tokens).value = "..>";
-                        (* count)++;
+                    if (curr + 3 < len && 
+                    tok[curr + 1] == '.' && 
+                    tok[curr + 2] == '>'
+                    ) {
+                        tokens[*count].name = strdup("Dependency");
+                        tokens[*count].value = strdup("..>");
+                        tokens[*count].type = DEPENDENCY;
+                        (*count)++;
                         curr += 3;
                     }
-                    else if (tok[curr + 1] == '.' && 
-                        tok[curr + 2] == '|' &&
+                    else if (curr + 4 < len && 
+                        tok[curr + 1] == '.' && 
+                        tok[curr + 2] == '|' && 
                         tok[curr + 3] == '>'
                     ) {
-                        (* tokens).name = "Realization";
-                        (* tokens).type = REALIZATION;
-                        (* tokens).value = "..|>";
-                        (* count)++;
-                        curr += 3;
+                        tokens[*count].name = strdup("Realization");
+                        tokens[*count].value = strdup("..|>");
+                        tokens[*count].type = REALIZATION;
+                        (*count)++;
+                        curr += 4;
                     }
-                    else if (tok[curr + 1] == '.') {
-                        (* tokens).name = "Link";
-                        (* tokens).type = LINK;
-                        (* tokens).value = "..";
-                        (* count)++;
-                        curr += 3;
+                    else if (curr + 2 < len && tok[curr + 1] == '.') {
+                        tokens[*count].name = strdup("Link");
+                        tokens[*count].value = strdup("..");
+                        tokens[*count].type = LINK;
+                        (*count)++;
+                        curr += 2;
                     }
                     break;
             }
@@ -166,10 +167,6 @@ void tokenize_line(Token *tokens, char *line, int *count) {
 
         curr++;
     }
-
-    printf("\n");
-
-    // printf("\n%d %s\n", *count, tok);
 }
 
 Token* tokenize(char *source) {
@@ -178,16 +175,13 @@ Token* tokenize(char *source) {
         perror("Memory allocation failed");
         return NULL;
     }
-    
 
     int count = 0;
     char* line = strtok(source, "\r\n");
     while (line != NULL) {
-        tokenize_line(tokens + count, line, &count);
+        tokenize_line(tokens, line, &count);
         line = strtok(NULL, "\r\n");
     }
-
-    tokens[count].value = NULL;
 
     return tokens;
 }
@@ -220,11 +214,21 @@ int main(int argc, char *argv[]) {
     fclose(fptr);
 
     Token* tokens = tokenize(buff);
+    if (tokens == NULL) {
+        fprintf(stderr, "Tokenization failed\n");
+        free(buff);
+        return 1;
+    }
+
     for (int i = 0; tokens[i].value != NULL; i++) {
         printf("%d: Type %d | '%s' %s\n", i, tokens[i].type, tokens[i].value, tokens[i].name);
+
+        free(tokens[i].value);
+        free(tokens[i].name);
     }
 
     free(buff);
+    free(tokens);
 
     return 0;
 }
