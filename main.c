@@ -50,23 +50,40 @@ char* trim(char* str) {
     return str;
 }
 
-void Tokenize(char *source) {
-    char* pch = strtok(source, "\r\n");
+void tokenize_line(Token *tokens, char *line, int *count) {
+    char* tok = trim(line);
+    int len = strlen(tok);
+
+    if (strcmp(tok, "classDiagram") == 0) {
+        (*count)--;
+        return;
+    }
+
+    int curr = 0;
+    while (curr < len) {
+        
+        curr++;
+    }
+
+    printf("\n");
+
+    // printf("\n%d %s\n", *count, tok);
+}
+
+Token* tokenize(char *source) {
+    Token *tokens = (Token *)malloc(128 * sizeof(Token));
+
+    char* line = strtok(source, "\r\n");
 
     int count = 0;
-    while (pch != NULL)
-    {
-        char* trimmed = trim(pch);
+    while (line != NULL) {
+        tokenize_line(tokens, line, &count);
+        line = strtok(NULL, "\r\n");
 
-        if (count == 0 && !strcmp(trimmed, "classDiagram") == 0) {
-            // error, the first line should be "classDiagram"
-        }
-
-        printf("%d %s\n", count, trimmed);
-
-        pch = strtok(NULL, "\r\n");
         count++;
     }
+
+    return tokens;
 }
 
 int main(int argc, char *argv[]) {
@@ -96,7 +113,7 @@ int main(int argc, char *argv[]) {
     buff[sz] = '\0';
     fclose(fptr);
 
-    Tokenize(buff);
+    Token* tokens = tokenize(buff);
 
     free(buff);
 
