@@ -26,7 +26,15 @@
 enum TokenType {
     CLASS,
     IDENTIFIER,
+
     INHERITANCE,
+    COMPOSITION,
+    AGGREGATION,
+    ASSOCIATION,
+    LINK, // takes care of solid and dashed
+    DEPENDENCY,
+    REALIZATION,
+
     OPEN_BRACE,
     CLOSE_BRACE
 };
@@ -62,8 +70,8 @@ void tokenize_line(Token *tokens, char *line, int *count) {
     }
 
     int curr = 0;
-    while (curr < len) {
-        if (isalnum(tok[curr])) {
+    while (curr < len) {           // takes care of the aggregation o-- (picked up by isalnum)
+        if (isalnum(tok[curr]) && (tok[curr != 0] && tok[curr + 1] != '-')) {
             int start = curr;
             
             while (isalnum(tok[curr])) {
@@ -73,10 +81,11 @@ void tokenize_line(Token *tokens, char *line, int *count) {
 
             printf(" ");
         }
+
         else { 
             switch (tok[curr]) {
                 case '<':
-                    if (tok[curr] == '<' && curr + 3 < len && 
+                    if (curr + 3 < len && 
                         tok[curr + 1] == '|' && 
                         tok[curr + 2] == '-' && 
                         tok[curr + 3] == '-'
@@ -89,17 +98,68 @@ void tokenize_line(Token *tokens, char *line, int *count) {
                     }
 
                     break;
-                
+
                 case '*':
+                    if (tok[curr + 1] == '-' && tok[curr + 2] == '-') {
+                        (* tokens).name = "Composition";
+                        (* tokens).type = COMPOSITION;
+                        (* tokens).value = "*--";
+                        (* count)++;
+                        curr += 3;
+                    }
                     break;
 
                 case 'o':
+                    if (tok[curr + 1] == '-' && tok[curr + 2] == '-') {
+                        (* tokens).name = "Aggregation";
+                        (* tokens).type = AGGREGATION;
+                        (* tokens).value = "o--";
+                        (* count)++;
+                        curr += 3;
+                    }
                     break;
 
                 case '-':
+                    if (tok[curr + 1] == '-' && tok[curr + 2] == '>') {
+                        (* tokens).name = "Association";
+                        (* tokens).type = ASSOCIATION;
+                        (* tokens).value = "-->";
+                        (* count)++;
+                        curr += 3;
+                    }
+                    else if (tok[curr + 1] == '-') {
+                        (* tokens).name = "Link";
+                        (* tokens).type = LINK;
+                        (* tokens).value = "--";
+                        (* count)++;
+                        curr += 2;
+                    }
                     break;
-
                 case '.':
+                    if (tok[curr + 1] == '.' && tok[curr + 2] == '>') {
+                        (* tokens).name = "Dependency";
+                        (* tokens).type = DEPENDENCY;
+                        (* tokens).value = "..>";
+                        (* count)++;
+                        curr += 3;
+                    }
+                    else if (tok[curr + 1] == '.' && 
+                        tok[curr + 2] == '|' &&
+                        tok[curr + 3] == '>'
+                    ) {
+                        (* tokens).name = "Realization";
+                        (* tokens).type = REALIZATION;
+                        (* tokens).value = "..|>";
+                        (* count)++;
+                        curr += 3;
+                    }
+                    else if (tok[curr + 1] == '.') {
+                        (* tokens).name = "Link";
+                        (* tokens).type = LINK;
+                        (* tokens).value = "..";
+                        (* count)++;
+                        curr += 3;
+                    }
                     break;
             }
         }

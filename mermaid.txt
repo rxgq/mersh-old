@@ -1,4 +1,3 @@
 Animal <|-- Duck
-Animal <|-- Duck
-Animal <|-- Duck
-Animal <|-- Duck
+Animal *--  Duck
+Animal o-- Duck
