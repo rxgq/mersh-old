@@ -26,12 +26,14 @@
 enum TokenType {
     CLASS,
     IDENTIFIER,
+    INHERITANCE,
     OPEN_BRACE,
     CLOSE_BRACE
 };
 
 typedef struct {
     char *name;
+    char *value;
     enum TokenType type;
 } Token;
 
@@ -61,7 +63,47 @@ void tokenize_line(Token *tokens, char *line, int *count) {
 
     int curr = 0;
     while (curr < len) {
-        
+        if (isalnum(tok[curr])) {
+            int start = curr;
+            
+            while (isalnum(tok[curr])) {
+                printf("%c", tok[curr]);
+                curr++;
+            }
+
+            printf(" ");
+        }
+        else { 
+            switch (tok[curr]) {
+                case '<':
+                    if (tok[curr] == '<' && curr + 3 < len && 
+                        tok[curr + 1] == '|' && 
+                        tok[curr + 2] == '-' && 
+                        tok[curr + 3] == '-'
+                    ) {
+                        (* tokens).name = "Inheritance";
+                        (* tokens).value = "<|--";
+                        (* tokens).type = INHERITANCE;
+                        (* count)++;
+                        curr += 4;
+                    }
+
+                    break;
+                
+                case '*':
+                    break;
+
+                case 'o':
+                    break;
+
+                case '-':
+                    break;
+
+                case '.':
+                    break;
+            }
+        }
+
         curr++;
     }
 
@@ -72,16 +114,20 @@ void tokenize_line(Token *tokens, char *line, int *count) {
 
 Token* tokenize(char *source) {
     Token *tokens = (Token *)malloc(128 * sizeof(Token));
-
-    char* line = strtok(source, "\r\n");
+    if (tokens == NULL) {
+        perror("Memory allocation failed");
+        return NULL;
+    }
+    
 
     int count = 0;
+    char* line = strtok(source, "\r\n");
     while (line != NULL) {
-        tokenize_line(tokens, line, &count);
+        tokenize_line(tokens + count, line, &count);
         line = strtok(NULL, "\r\n");
-
-        count++;
     }
+
+    tokens[count].value = NULL;
 
     return tokens;
 }
@@ -114,6 +160,9 @@ int main(int argc, char *argv[]) {
     fclose(fptr);
 
     Token* tokens = tokenize(buff);
+    for (int i = 0; tokens[i].value != NULL; i++) {
+        printf("%d: Type %d | '%s' %s\n", i, tokens[i].type, tokens[i].value, tokens[i].name);
+    }
 
     free(buff);
 
