@@ -1,0 +1,51 @@
+classDiagram
+    Animal <|-- Duck    // Animal decl, inher, Duck decl
+    Animal <|-- Fish    // Animal decl, inher, Fish decl
+    Animal <|-- Zebra   // Animal decl, inher, Zebra decl
+    Animal : +int age   // Animal decl, public prop
+    Animal: +isMammal() // Animal decl, public func
+    Animal: +mate()     // Animal decl, public func
+    
+
+
+    class Duck{
+      +String beakColor
+      +swim()
+      +quack()
+    }
+    class Fish{
+      -int sizeInFeet
+      -canEat()
+    }
+    class Zebra{
+      +bool is_wild
+      +run()
+    }
+
+
+=============================
+
+classDiagram
+    Animal <|-- Duck
+    Animal <|-- Fish
+    Animal <|-- Zebra
+
+    class Animal {
+      +int age
+      +isMammal()
+      +mate()
+    }
+    
+    class Duck{
+      +String beakColor
+      +swim()
+      +quack()
+    }
+    class Fish{
+      -int sizeInFeet
+      -canEat()
+    }
+    class Zebra{
+      +bool is_wild
+      +run()
+    }
