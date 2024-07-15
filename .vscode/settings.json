@@ -14,6 +14,7 @@
         "polybar/config": "ini",
         "polybar/*.conf": "ini",
         "string.h": "c",
-        "tokenizer.h": "c"
+        "tokenizer.h": "c",
+        "translator.h": "c"
     }
 }

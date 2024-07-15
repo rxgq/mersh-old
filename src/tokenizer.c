@@ -37,6 +37,16 @@ void tokenize_line(Token *tokens, char *line, int *count) {
                 curr++;
             }
 
+            char* name = (char *)malloc((curr - start + 1) * sizeof(char));
+            strncpy(name, tok + start, curr - start);
+            name[curr - start] = '\0';
+            
+            if (strcmp(name, "class") == 0) {
+                tokens[*count].type = DECLARATION;
+            }  else {
+                tokens[*count].type = IDENTIFIER;
+            }
+
             tokens[*count].value = (char *)malloc((curr - start + 1) * sizeof(char));
             strncpy(tokens[*count].value, tok + start, curr - start);
             tokens[*count].value[curr - start] = '\0';
@@ -45,15 +55,12 @@ void tokenize_line(Token *tokens, char *line, int *count) {
             strncpy(tokens[*count].name, tok + start, curr - start);
             tokens[*count].name[curr - start] = '\0';
 
-            tokens[*count].type = IDENTIFIER;
-
             (*count)++;
         }
         else { 
             switch (tok[curr]) {
                 case '<':
-                    if (curr + 3 < len && 
-                        tok[curr + 1] == '|' && 
+                    if (tok[curr + 1] == '|' && 
                         tok[curr + 2] == '-' && 
                         tok[curr + 3] == '-'
                     ) {
@@ -66,10 +73,7 @@ void tokenize_line(Token *tokens, char *line, int *count) {
                     break;
 
                 case '*':
-                    if (curr + 3 < len && 
-                        tok[curr + 1] == '-' && 
-                        tok[curr + 2] == '-'
-                    ) {
+                    if (tok[curr + 1] == '-' && tok[curr + 2] == '-') {
                         tokens[*count].name = strdup("Composition");
                         tokens[*count].value = strdup("*--");
                         tokens[*count].type = COMPOSITION;
@@ -79,10 +83,7 @@ void tokenize_line(Token *tokens, char *line, int *count) {
                     break;
 
                 case 'o':
-                    if (curr + 3 < len && 
-                        tok[curr + 1] == '-' && 
-                        tok[curr + 2] == '-'
-                    ) {
+                    if (tok[curr + 1] == '-' && tok[curr + 2] == '-') {
                         tokens[*count].name = strdup("Aggregation");
                         tokens[*count].value = strdup("o--");
                         tokens[*count].type = AGGREGATION;
@@ -92,10 +93,7 @@ void tokenize_line(Token *tokens, char *line, int *count) {
                     break;
 
                 case '-':
-                    if (curr + 3 < len && 
-                        tok[curr + 1] == '-' && 
-                        tok[curr + 2] == '>'
-                    ) {
+                    if (tok[curr + 1] == '-' && tok[curr + 2] == '>') {
                         tokens[*count].name = strdup("Association");
                         tokens[*count].value = strdup("-->");
                         tokens[*count].type = ASSOCIATION;
@@ -112,18 +110,14 @@ void tokenize_line(Token *tokens, char *line, int *count) {
                     break;
 
                 case '.':
-                    if (curr + 3 < len && 
-                    tok[curr + 1] == '.' && 
-                    tok[curr + 2] == '>'
-                    ) {
+                    if (tok[curr + 1] == '.' && tok[curr + 2] == '>') {
                         tokens[*count].name = strdup("Dependency");
                         tokens[*count].value = strdup("..>");
                         tokens[*count].type = DEPENDENCY;
                         (*count)++;
                         curr += 3;
                     }
-                    else if (curr + 4 < len && 
-                        tok[curr + 1] == '.' && 
+                    else if (tok[curr + 1] == '.' && 
                         tok[curr + 2] == '|' && 
                         tok[curr + 3] == '>'
                     ) {

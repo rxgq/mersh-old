@@ -2,8 +2,12 @@
 #define TOKENIZER_H
 
 enum TokenType {
-    CLASS,
     IDENTIFIER,
+
+    DECLARATION,
+    OPEN_BRACE,
+    CLOSE_BRACE,
+
     INHERITANCE,
     COMPOSITION,
     AGGREGATION,
@@ -11,8 +15,8 @@ enum TokenType {
     LINK,
     DEPENDENCY,
     REALIZATION,
-    OPEN_BRACE,
-    CLOSE_BRACE
+
+    UNKNOWN
 };
 
 typedef struct {

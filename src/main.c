@@ -1,8 +1,28 @@
 #include "tokenizer.h"
+//#include "translator.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
+const char* token_type_to_string(enum TokenType type) {
+    switch (type) {
+        case IDENTIFIER:  return "IDENTIFIER";
+        case DECLARATION: return "DECLARATION";
+        case OPEN_BRACE:  return "OPEN_BRACE";
+        case CLOSE_BRACE: return "CLOSE_BRACE";
+        case INHERITANCE: return "INHERITANCE";
+        case COMPOSITION: return "COMPOSITION";
+        case AGGREGATION: return "AGGREGATION";
+        case ASSOCIATION: return "ASSOCIATION";
+        case LINK:        return "LINK";
+        case DEPENDENCY:  return "DEPENDENCY";
+        case REALIZATION: return "REALIZATION";
+        case UNKNOWN:     return "UNKNOWN";
+        default:          return "INVALID_TOKEN_TYPE";
+    }
+}
+
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -38,8 +58,10 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+   // translate(tokens);
+
     for (int i = 0; tokens[i].value != NULL; i++) {
-        printf("%d: Type %d | '%s' %s\n", i, tokens[i].type, tokens[i].value, tokens[i].name);
+        printf("%d: Type %s | '%s' %s\n", i, token_type_to_string(tokens[i].type), tokens[i].value, tokens[i].name);
 
         free(tokens[i].value);
         free(tokens[i].name);
