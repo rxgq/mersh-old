@@ -19,6 +19,128 @@ char* trim(char* str) {
     return str;
 }
 
+void on_alnum(int *curr, char* tok, Token* tokens, int *count) {
+    int start = *curr;
+
+    while (isalnum(tok[*curr])) {
+        (*curr)++;
+    }
+
+    int length = *curr - start;
+    char* name = (char *)malloc((length + 1) * sizeof(char));
+    strncpy(name, tok + start, length);
+    name[length] = '\0';
+
+    tokens[*count].type = strcmp(name, "class") == 0 ? DECLARATION : IDENTIFIER;
+
+    tokens[*count].value = (char *)malloc((length + 1) * sizeof(char));
+    strncpy(tokens[*count].value, tok + start, length);
+    tokens[*count].value[length] = '\0';
+
+    tokens[*count].name = (char *)malloc((length + 1) * sizeof(char));
+    strncpy(tokens[*count].name, tok + start, length);
+    tokens[*count].name[length] = '\0';
+
+    (*count)++;
+    free(name);
+}
+
+void on_brace(int *curr, char* tok, Token* tokens, int *count) {
+    tokens[*count].value = (char *)malloc(2 * sizeof(char));
+    tokens[*count].value[0] = tok[*curr];
+    tokens[*count].value[1] = '\0';
+
+    tokens[*count].name = (char *)malloc(2 * sizeof(char));
+    tokens[*count].name[0] = tok[*curr];
+    tokens[*count].name[1] = '\0';
+
+    tokens[*count].type = tok[*curr] == '{' ? OPEN_BRACE : CLOSE_BRACE;
+
+    curr++;
+    (*count)++;
+}
+
+void on_relation(int *curr, char* tok, Token* tokens, int *count) {
+    switch (tok[*curr]) {
+        case '<':
+            if (tok[*curr + 1] == '|' && 
+                tok[*curr + 2] == '-' && 
+                tok[*curr + 3] == '-'
+            ) {
+                tokens[*count].name = strdup("Inheritance");
+                tokens[*count].value = strdup("<|--");
+                tokens[*count].type = INHERITANCE;
+                (*count)++;
+                (*curr) += 4;
+            }
+            break;
+
+        case '*':
+            if (tok[*curr + 1] == '-' && tok[*curr + 2] == '-') {
+                tokens[*count].name = strdup("Composition");
+                tokens[*count].value = strdup("*--");
+                tokens[*count].type = COMPOSITION;
+                (*count)++;
+                (*curr) += 3;
+            }
+            break;
+
+        case 'o':
+            if (tok[*curr + 1] == '-' && tok[*curr + 2] == '-') {
+                tokens[*count].name = strdup("Aggregation");
+                tokens[*count].value = strdup("o--");
+                tokens[*count].type = AGGREGATION;
+                (*count)++;
+                (*curr) += 3;
+            }
+            break;
+
+        case '-':
+            if (tok[*curr + 1] == '-' && tok[*curr + 2] == '>') {
+                tokens[*count].name = strdup("Association");
+                tokens[*count].value = strdup("-->");
+                tokens[*count].type = ASSOCIATION;
+                (*count)++;
+                (*curr) += 3;
+            }
+            else if (tok[*curr + 1] == '-') {
+                tokens[*count].name = strdup("Link");
+                tokens[*count].value = strdup("--");
+                tokens[*count].type = LINK;
+                (*count)++;
+                (*curr) += 2;
+            }
+            break;
+
+        case '.':
+            if (tok[*curr + 1] == '.' && tok[*curr + 2] == '>') {
+                tokens[*count].name = strdup("Dependency");
+                tokens[*count].value = strdup("..>");
+                tokens[*count].type = DEPENDENCY;
+                (*count)++;
+                (*curr) += 3;
+            }
+            else if (tok[*curr + 1] == '.' && 
+                tok[*curr + 2] == '|' && 
+                tok[*curr + 3] == '>'
+            ) {
+                tokens[*count].name = strdup("Realization");
+                tokens[*count].value = strdup("..|>");
+                tokens[*count].type = REALIZATION;
+                (*count)++;
+                (*curr) += 4;
+            }
+            else if (tok[*curr + 1] == '.') {
+                tokens[*count].name = strdup("Link");
+                tokens[*count].value = strdup("..");
+                tokens[*count].type = LINK;
+                (*count)++;
+                (*curr) += 2;
+            }
+            break;
+    }
+}
+
 void tokenize_line(Token *tokens, char *line, int *count) {
     char* tok = trim(line);
     int len = strlen(tok);
@@ -31,125 +153,13 @@ void tokenize_line(Token *tokens, char *line, int *count) {
     int curr = 0;
     while (curr < len) {          // handles aggregation ungracefully
         if (isalnum(tok[curr]) && (tok[curr != 0] && tok[curr + 1] != '-')) {
-            int start = curr;
-
-            while (isalnum(tok[curr])) {
-                curr++;
-            }
-
-            char* name = (char *)malloc((curr - start + 1) * sizeof(char));
-            strncpy(name, tok + start, curr - start);
-            name[curr - start] = '\0';
-            
-            if (strcmp(name, "class") == 0) {
-                tokens[*count].type = DECLARATION;
-            }  else {
-                tokens[*count].type = IDENTIFIER;
-            }
-
-            tokens[*count].value = (char *)malloc((curr - start + 1) * sizeof(char));
-            strncpy(tokens[*count].value, tok + start, curr - start);
-            tokens[*count].value[curr - start] = '\0';
-
-            tokens[*count].name = (char *)malloc((curr - start + 1) * sizeof(char));
-            strncpy(tokens[*count].name, tok + start, curr - start);
-            tokens[*count].name[curr - start] = '\0';
-
-            (*count)++;
+            on_alnum(&curr, tok, tokens, count);
         }
         else if (tok[curr] == '{' || tok[curr] == '}') {
-            tokens[*count].value = (char *)malloc(2 * sizeof(char));
-            tokens[*count].value[0] = tok[curr];
-            tokens[*count].value[1] = '\0';
-
-            tokens[*count].name = (char *)malloc(2 * sizeof(char));
-            tokens[*count].name[0] = tok[curr];
-            tokens[*count].name[1] = '\0';
-
-            tokens[*count].type = tok[curr] == '{' ? OPEN_BRACE : CLOSE_BRACE;
-
-            curr++;
-            (*count)++;
+            on_brace(&curr, tok, tokens, count);
         }
         else { 
-            switch (tok[curr]) {
-                case '<':
-                    if (tok[curr + 1] == '|' && 
-                        tok[curr + 2] == '-' && 
-                        tok[curr + 3] == '-'
-                    ) {
-                        tokens[*count].name = strdup("Inheritance");
-                        tokens[*count].value = strdup("<|--");
-                        tokens[*count].type = INHERITANCE;
-                        (*count)++;
-                        curr += 4;
-                    }
-                    break;
-
-                case '*':
-                    if (tok[curr + 1] == '-' && tok[curr + 2] == '-') {
-                        tokens[*count].name = strdup("Composition");
-                        tokens[*count].value = strdup("*--");
-                        tokens[*count].type = COMPOSITION;
-                        (*count)++;
-                        curr += 3;
-                    }
-                    break;
-
-                case 'o':
-                    if (tok[curr + 1] == '-' && tok[curr + 2] == '-') {
-                        tokens[*count].name = strdup("Aggregation");
-                        tokens[*count].value = strdup("o--");
-                        tokens[*count].type = AGGREGATION;
-                        (*count)++;
-                        curr += 3;
-                    }
-                    break;
-
-                case '-':
-                    if (tok[curr + 1] == '-' && tok[curr + 2] == '>') {
-                        tokens[*count].name = strdup("Association");
-                        tokens[*count].value = strdup("-->");
-                        tokens[*count].type = ASSOCIATION;
-                        (*count)++;
-                        curr += 3;
-                    }
-                    else if (curr + 2 < len && tok[curr + 1] == '-') {
-                        tokens[*count].name = strdup("Link");
-                        tokens[*count].value = strdup("--");
-                        tokens[*count].type = LINK;
-                        (*count)++;
-                        curr += 2;
-                    }
-                    break;
-
-                case '.':
-                    if (tok[curr + 1] == '.' && tok[curr + 2] == '>') {
-                        tokens[*count].name = strdup("Dependency");
-                        tokens[*count].value = strdup("..>");
-                        tokens[*count].type = DEPENDENCY;
-                        (*count)++;
-                        curr += 3;
-                    }
-                    else if (tok[curr + 1] == '.' && 
-                        tok[curr + 2] == '|' && 
-                        tok[curr + 3] == '>'
-                    ) {
-                        tokens[*count].name = strdup("Realization");
-                        tokens[*count].value = strdup("..|>");
-                        tokens[*count].type = REALIZATION;
-                        (*count)++;
-                        curr += 4;
-                    }
-                    else if (curr + 2 < len && tok[curr + 1] == '.') {
-                        tokens[*count].name = strdup("Link");
-                        tokens[*count].value = strdup("..");
-                        tokens[*count].type = LINK;
-                        (*count)++;
-                        curr += 2;
-                    }
-                    break;
-            }
+            on_relation(&curr, tok, tokens, count);
         }
 
         curr++;
@@ -157,7 +167,7 @@ void tokenize_line(Token *tokens, char *line, int *count) {
 }
 
 Token* tokenize(char *source) {
-    Token *tokens = (Token *)malloc(128 * sizeof(Token));
+    Token *tokens = (Token *)malloc(256 * sizeof(Token));
     if (tokens == NULL) {
         perror("Memory allocation failed");
         return NULL;

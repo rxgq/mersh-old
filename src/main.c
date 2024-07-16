@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 
     fseek(fptr, 0, SEEK_END);
     long sz = ftell(fptr);
-    fseek(fptr, 0, SEEK_SET);
+    rewind(fptr);
 
     char *buff = (char *)malloc((sz + 1) * sizeof(char));
     if (buff == NULL) {
