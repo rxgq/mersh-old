@@ -9,6 +9,10 @@ typedef struct {
     Token relation;
 } ClassRelation;
 
+typedef struct {
+    Token class_identifier;
+} ClassDefinition;
+
 void transform(Token *tokens);
 
 #endif
