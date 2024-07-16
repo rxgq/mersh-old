@@ -1,4 +1,6 @@
 Animal <|-- Duck
 Animal *--  Bird
 Animal o-- Dog
-class Cat {}
+class Cat { 
+    
+}

@@ -57,6 +57,20 @@ void tokenize_line(Token *tokens, char *line, int *count) {
 
             (*count)++;
         }
+        else if (tok[curr] == '{' || tok[curr] == '}') {
+            tokens[*count].value = (char *)malloc(2 * sizeof(char));
+            tokens[*count].value[0] = tok[curr];
+            tokens[*count].value[1] = '\0';
+
+            tokens[*count].name = (char *)malloc(2 * sizeof(char));
+            tokens[*count].name[0] = tok[curr];
+            tokens[*count].name[1] = '\0';
+
+            tokens[*count].type = tok[curr] == '{' ? OPEN_BRACE : CLOSE_BRACE;
+
+            curr++;
+            (*count)++;
+        }
         else { 
             switch (tok[curr]) {
                 case '<':

@@ -23,7 +23,6 @@ const char* token_type_to_string(enum TokenType type) {
     }
 }
 
-
 int main(int argc, char *argv[]) {
     if (argc < 2) {
         printf("Usage: %s <filename>\n", argv[0]);
