@@ -11,7 +11,16 @@ void write_class(Token token) {
         return;
     }
 
-    fprintf(fptr, "public class %s {}\n", token.name);
+    // check if file is newly created
+    fseek(fptr, 0, SEEK_END);
+    long sz = ftell(fptr);
+    if (sz == 0) {
+        fprintf(fptr, "public class %s {\n\n}\n", token.name);
+    } else {
+        fseek(fptr, -2, SEEK_END);
+        fprintf(fptr, "\n}\n");
+    }
+
 
     fclose(fptr);
 }

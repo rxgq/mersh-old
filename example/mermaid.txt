@@ -1,8 +1,8 @@
-Animal <|-- Duck
-Animal o-- Bird
-Animal *-- Feathers
-
 class Animal {
+
+}
+
+class Animals {
 
 }
 
