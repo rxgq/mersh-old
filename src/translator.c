@@ -16,13 +16,10 @@ void write_class(Token token) {
     fclose(fptr);
 }
 
-void translate(Token *tokens) {
-    int curr = 0;
-    while (tokens[curr].name != NULL) {
-        if (tokens[curr].type == IDENTIFIER) {
-            write_class(tokens[curr]);
-        }
-
-        curr++;
+void translate(ClassExpressions *exprs) {
+    for (int i = 0; i < exprs->definition_count; i++) {
+        write_class(exprs->definitions[i].identifier);
     }
+
+
 }

@@ -1,8 +1,8 @@
-#include "tokenizer.h"
+#include "transformer.h"
 
 #ifndef TRANSLATOR_H
 #define TRANSLATOR_H
 
-void translate(Token* tokens);
+void translate(ClassExpressions *exprs);
 
 #endif

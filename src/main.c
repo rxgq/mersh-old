@@ -1,9 +1,17 @@
-#include "tokenizer.h"
-#include "transformer.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
+#ifdef _WIN32
+#include <direct.h>
+#else
+#include <sys/stat.h>
+#endif
+
+#include "tokenizer.h"
+#include "transformer.h"
+#include "translator.h"
 
 const char* token_type_to_string(enum TokenType type) {
     switch (type) {
@@ -20,6 +28,12 @@ const char* token_type_to_string(enum TokenType type) {
         case REALIZATION: return "REALIZATION";
         case UNKNOWN:     return "UNKNOWN";
         default:          return "INVALID_TOKEN_TYPE";
+    }
+}
+
+void tokens_to_string(Token *tokens) {
+    for (int i = 0; tokens[i].value != NULL; i++) {
+        printf("%d: (line %d) Type %s | '%s' %s\n", i, tokens[i].line, token_type_to_string(tokens[i].type), tokens[i].value, tokens[i].name);
     }
 }
 
@@ -69,14 +83,20 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     
-    for (int i = 0; tokens[i].value != NULL; i++) {
-        printf("%d: (line %d) Type %s | '%s' %s\n", i, tokens[i].line, token_type_to_string(tokens[i].type), tokens[i].value, tokens[i].name);
-    }
+    // tokens_to_string(tokens);
 
     ClassExpressions exprs;
     transform(tokens, &exprs);
 
-    class_exprs_to_string(&exprs);
+    // class_exprs_to_string(&exprs);
+
+    #ifdef _WIN32
+    _mkdir("out");
+    #else
+    mkdir("out", 0777);
+    #endif
+
+    translate(&exprs);
 
     free(buff);
     free(tokens);

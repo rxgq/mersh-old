@@ -1,5 +1,5 @@
 {
-    "workbench.colorTheme": "Palenight Operator",
+    "workbench.colorTheme": "Tokyo Night Storm",
     "files.associations": {
         "*.rasi": "css",
         "*.bbmodel": "json",
@@ -15,6 +15,7 @@
         "polybar/*.conf": "ini",
         "string.h": "c",
         "tokenizer.h": "c",
-        "translator.h": "c"
+        "translator.h": "c",
+        "stdlib.h": "c"
     }
 }
