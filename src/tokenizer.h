@@ -22,6 +22,7 @@ enum TokenType {
 typedef struct {
     char *name;
     char *value;
+    int line;
     enum TokenType type;
 } Token;
 

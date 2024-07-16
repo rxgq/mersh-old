@@ -19,7 +19,7 @@ char* trim(char* str) {
     return str;
 }
 
-void on_alnum(int *curr, char* tok, Token* tokens, int *count) {
+void on_alnum(int *curr, char* tok, Token* tokens, int *count, int tok_line) {
     int start = *curr;
 
     while (isalnum(tok[*curr])) {
@@ -41,11 +41,13 @@ void on_alnum(int *curr, char* tok, Token* tokens, int *count) {
     strncpy(tokens[*count].name, tok + start, length);
     tokens[*count].name[length] = '\0';
 
+    tokens[*count].line = tok_line;
+
     (*count)++;
     free(name);
 }
 
-void on_brace(int *curr, char* tok, Token* tokens, int *count) {
+void on_brace(int *curr, char* tok, Token* tokens, int *count, int tok_line) {
     tokens[*count].value = (char *)malloc(2 * sizeof(char));
     tokens[*count].value[0] = tok[*curr];
     tokens[*count].value[1] = '\0';
@@ -56,17 +58,18 @@ void on_brace(int *curr, char* tok, Token* tokens, int *count) {
 
     tokens[*count].type = tok[*curr] == '{' ? OPEN_BRACE : CLOSE_BRACE;
 
+    tokens[*count].line = tok_line;
+
     curr++;
     (*count)++;
 }
 
-void on_relation(int *curr, char* tok, Token* tokens, int *count) {
+void on_relation(int *curr, char* tok, Token* tokens, int *count, int tok_line) {
+    tokens[*count].line = tok_line;
+
     switch (tok[*curr]) {
         case '<':
-            if (tok[*curr + 1] == '|' && 
-                tok[*curr + 2] == '-' && 
-                tok[*curr + 3] == '-'
-            ) {
+            if (tok[*curr + 1] == '|' && tok[*curr + 2] == '-' && tok[*curr + 3] == '-') {
                 tokens[*count].name = strdup("Inheritance");
                 tokens[*count].value = strdup("<|--");
                 tokens[*count].type = INHERITANCE;
@@ -120,10 +123,7 @@ void on_relation(int *curr, char* tok, Token* tokens, int *count) {
                 (*count)++;
                 (*curr) += 3;
             }
-            else if (tok[*curr + 1] == '.' && 
-                tok[*curr + 2] == '|' && 
-                tok[*curr + 3] == '>'
-            ) {
+            else if (tok[*curr + 1] == '.' && tok[*curr + 2] == '|' && tok[*curr + 3] == '>') {
                 tokens[*count].name = strdup("Realization");
                 tokens[*count].value = strdup("..|>");
                 tokens[*count].type = REALIZATION;
@@ -141,7 +141,7 @@ void on_relation(int *curr, char* tok, Token* tokens, int *count) {
     }
 }
 
-void tokenize_line(Token *tokens, char *line, int *count) {
+void tokenize_line(Token *tokens, char *line, int *count, int tok_line) {
     char* tok = trim(line);
     int len = strlen(tok);
 
@@ -151,15 +151,15 @@ void tokenize_line(Token *tokens, char *line, int *count) {
     }
 
     int curr = 0;
-    while (curr < len) {          // handles aggregation ungracefully
+    while (curr < len) {          // handles aggregation ungracefully (o--)
         if (isalnum(tok[curr]) && (tok[curr != 0] && tok[curr + 1] != '-')) {
-            on_alnum(&curr, tok, tokens, count);
+            on_alnum(&curr, tok, tokens, count, tok_line);
         }
         else if (tok[curr] == '{' || tok[curr] == '}') {
-            on_brace(&curr, tok, tokens, count);
+            on_brace(&curr, tok, tokens, count, tok_line);
         }
         else { 
-            on_relation(&curr, tok, tokens, count);
+            on_relation(&curr, tok, tokens, count, tok_line);
         }
 
         curr++;
@@ -174,10 +174,13 @@ Token* tokenize(char *source) {
     }
 
     int count = 0;
+    int tok_line = 1;
     char* line = strtok(source, "\r\n");
     while (line != NULL) {
-        tokenize_line(tokens, line, &count);
+        tokenize_line(tokens, line, &count, tok_line);
         line = strtok(NULL, "\r\n");
+
+        tok_line++;
     }
 
     return tokens;

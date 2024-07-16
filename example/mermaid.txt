@@ -2,5 +2,6 @@ Animal <|-- Duck
 Animal *--  Bird
 Animal o-- Dog
 class Cat { 
-
+  +int age
+  -bool isAlive
 }
