@@ -23,10 +23,10 @@ ClassExpressions* transform(Token *tokens, ClassExpressions *exprs) {
     exprs->definition_count = 0;
 
     while (tokens[curr].name != NULL) {
-        printf("Line %d\n", current_line);
+        // printf("Line %d\n", current_line);
 
         while (tokens[curr].name != NULL && tokens[curr].line == current_line) {
-            printf("   %d: Value: '%s' | Name: %s\n", curr, tokens[curr].value, tokens[curr].name);
+            // printf("   %d: Value: '%s' | Name: %s\n", curr, tokens[curr].value, tokens[curr].name);
 
             if (strcmp(tokens[curr].value, "{") == 0) {
                 inside_curly_braces = 1;
@@ -36,7 +36,7 @@ ClassExpressions* transform(Token *tokens, ClassExpressions *exprs) {
             }
 
             if (is_class_definition(tokens[curr])) {
-                printf("      This token is inside curly braces or a class definition.\n\n");
+                // printf("      This token is inside curly braces or a class definition.\n\n");
 
                 ClassDefinition expr;
                 expr.identifier = tokens[curr + 1];
@@ -44,7 +44,7 @@ ClassExpressions* transform(Token *tokens, ClassExpressions *exprs) {
                 exprs->definitions[exprs->definition_count++] = expr;
             } 
             else if (is_relation_definition(tokens[curr])) {
-                printf("      This token is a relation definition.\n\n");
+                // printf("      This token is a relation definition.\n\n");
                 
                 ClassRelation expr;
                 expr.originator = tokens[curr - 1];
@@ -54,7 +54,7 @@ ClassExpressions* transform(Token *tokens, ClassExpressions *exprs) {
                 exprs->relations[exprs->relation_count++] = expr;
             } 
             else {
-                printf("      This token is an identifier.\n\n");
+                // printf("      This token is an identifier.\n\n");
 
             }
 

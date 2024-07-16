@@ -47,7 +47,7 @@ void on_alnum(int *curr, char* tok, Token* tokens, int *count, int tok_line) {
     free(name);
 }
 
-void on_brace(int *curr, char* tok, Token* tokens, int *count, int tok_line) {
+void on_brace(int *curr, char* tok, Token* tokens, int *count, int tok_line, char* source) {
     tokens[*count].value = (char *)malloc(2 * sizeof(char));
     tokens[*count].value[0] = tok[*curr];
     tokens[*count].value[1] = '\0';
@@ -57,10 +57,9 @@ void on_brace(int *curr, char* tok, Token* tokens, int *count, int tok_line) {
     tokens[*count].name[1] = '\0';
 
     tokens[*count].type = tok[*curr] == '{' ? OPEN_BRACE : CLOSE_BRACE;
-
     tokens[*count].line = tok_line;
 
-    curr++;
+    (*curr)++;
     (*count)++;
 }
 
@@ -141,7 +140,36 @@ void on_relation(int *curr, char* tok, Token* tokens, int *count, int tok_line) 
     }
 }
 
-void tokenize_line(Token *tokens, char *line, int *count, int tok_line) {
+void on_attribute(int *curr, char* tok, Token* tokens, int *count, int tok_line) {
+    int start = *curr;
+    enum TokenType type = tok[*curr] == '+' ? PROPERTY : PROPERTY;
+
+    while (tok[*curr] != '\0' && tok[*curr] != '\n' && tok[*curr] != '\r') {
+        (*curr)++;
+    }
+
+    int length = *curr - start;
+    char* attribute = (char *)malloc((length + 1) * sizeof(char));
+    strncpy(attribute, tok + start, length);
+    attribute[length] = '\0';
+
+    tokens[*count].type = type;
+    tokens[*count].value = (char *)malloc((length + 1) * sizeof(char));
+    strncpy(tokens[*count].value, attribute, length);
+    tokens[*count].value[length] = '\0';
+
+    tokens[*count].name = (char *)malloc((length + 1) * sizeof(char));
+    strncpy(tokens[*count].name, attribute, length);
+    tokens[*count].name[length] = '\0';
+
+    tokens[*count].line = tok_line;
+
+    (*count)++;
+    free(attribute);
+}
+
+
+void tokenize_line(Token *tokens, char *line, int *count, int tok_line, char* source) {
     char* tok = trim(line);
     int len = strlen(tok);
 
@@ -151,18 +179,23 @@ void tokenize_line(Token *tokens, char *line, int *count, int tok_line) {
     }
 
     int curr = 0;
-    while (curr < len) {          // handles aggregation ungracefully (o--)
-        if (isalnum(tok[curr]) && (tok[curr != 0] && tok[curr + 1] != '-')) {
-            on_alnum(&curr, tok, tokens, count, tok_line);
-        }
-        else if (tok[curr] == '{' || tok[curr] == '}') {
-            on_brace(&curr, tok, tokens, count, tok_line);
-        }
-        else { 
-            on_relation(&curr, tok, tokens, count, tok_line);
-        }
+    if (tok[curr] == '+' || tok[curr] == '-') {
+        on_attribute(&curr, tok, tokens, count, tok_line);
+    }
+    else {
+        while (curr < len) {          
+            if (isalnum(tok[curr]) && (tok[curr != 0] && tok[curr + 1] != '-')) {
+                on_alnum(&curr, tok, tokens, count, tok_line);
+            }
+            else if (tok[curr] == '{' || tok[curr] == '}') {
+                on_brace(&curr, tok, tokens, count, tok_line, source);
+            }
+            else { 
+                on_relation(&curr, tok, tokens, count, tok_line);
+            }
 
-        curr++;
+            curr++;
+        }
     }
 }
 
@@ -177,7 +210,7 @@ Token* tokenize(char *source) {
     int tok_line = 1;
     char* line = strtok(source, "\r\n");
     while (line != NULL) {
-        tokenize_line(tokens, line, &count, tok_line);
+        tokenize_line(tokens, line, &count, tok_line, source);
         line = strtok(NULL, "\r\n");
 
         tok_line++;

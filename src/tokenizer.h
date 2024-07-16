@@ -5,6 +5,7 @@ enum TokenType {
     IDENTIFIER,
 
     DECLARATION,
+    PROPERTY,
     OPEN_BRACE,
     CLOSE_BRACE,
 
