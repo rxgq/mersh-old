@@ -1,5 +1,5 @@
 #include "tokenizer.h"
-#include "translator.h"
+#include "transformer.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -56,15 +56,15 @@ int main(int argc, char *argv[]) {
         free(buff);
         return 1;
     }
-
-    translate(tokens);
-
+    
     for (int i = 0; tokens[i].value != NULL; i++) {
         printf("%d: (line %d) Type %s | '%s' %s\n", i, tokens[i].line, token_type_to_string(tokens[i].type), tokens[i].value, tokens[i].name);
 
         free(tokens[i].value);
         free(tokens[i].name);
     }
+
+    transform(tokens);
 
     free(buff);
     free(tokens);
