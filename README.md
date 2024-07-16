@@ -1,5 +1,10 @@
 ## Get Started
 
+> [!WARNING]  
+> This project is unfinished, i would not recommend using it right now.
+> 
+<br>
+
 Clone the repository:
 ```bash
 git clone https://github.com/ashtondunderdale/mersh.git
