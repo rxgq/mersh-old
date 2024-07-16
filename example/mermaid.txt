@@ -1,7 +1,15 @@
 Animal <|-- Duck
-Animal *--  Bird
-Animal o-- Dog
-class Cat { 
-  +int age
-  -bool isAlive
+Animal o-- Bird
+Animal *-- Feathers
+
+class Animal {
+
+}
+
+class Duck {
+    
+}
+
+class Cat {
+    
 }

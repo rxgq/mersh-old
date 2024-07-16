@@ -14,10 +14,13 @@ int is_relation_definition(Token token) {
             strcmp(token.value, "..|>") == 0 || strcmp(token.value, "..") == 0;
 }
 
-void transform(Token *tokens) {
+ClassExpressions* transform(Token *tokens, ClassExpressions *exprs) {
     int curr = 0;
     int current_line = tokens[curr].line;
     int inside_curly_braces = 0;
+
+    exprs->relation_count = 0;
+    exprs->definition_count = 0;
 
     while (tokens[curr].name != NULL) {
         printf("Line %d\n", current_line);
@@ -32,19 +35,26 @@ void transform(Token *tokens) {
                 inside_curly_braces = 0;
             }
 
-            if (inside_curly_braces || is_class_definition(tokens[curr])) {
+            if (is_class_definition(tokens[curr])) {
                 printf("      This token is inside curly braces or a class definition.\n\n");
 
+                ClassDefinition expr;
+                expr.identifier = tokens[curr + 1];
 
+                exprs->definitions[exprs->definition_count++] = expr;
             } 
             else if (is_relation_definition(tokens[curr])) {
                 printf("      This token is a relation definition.\n\n");
+                
+                ClassRelation expr;
+                expr.originator = tokens[curr - 1];
+                expr.relation = tokens[curr];
+                expr.recipient = tokens[curr + 1];
 
-
+                exprs->relations[exprs->relation_count++] = expr;
             } 
             else {
                 printf("      This token is an identifier.\n\n");
-
 
             }
 
@@ -57,5 +67,5 @@ void transform(Token *tokens) {
         }
     }
 
-    printf("\n\n");
+    return exprs;
 }

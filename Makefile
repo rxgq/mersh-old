@@ -4,12 +4,12 @@ INCLUDES=-I./src
 
 SRCS=./src/main.c ./src/tokenizer.c ./src/transformer.c ./src/translator.c
 OBJS=$(SRCS:.c=.o)
-EXECUTABLES=main tokenizer transformer translator
+EXECUTABLES=mersh tokenizer transformer translator
 
 all: $(EXECUTABLES) post-build
 
-main: ./src/main.o ./src/tokenizer.o ./src/transformer.o ./src/translator.o
-	$(CC) $(CFLAGS) $(INCLUDES) ./src/main.o ./src/tokenizer.o ./src/transformer.o ./src/translator.o -o main
+mersh: ./src/main.o ./src/tokenizer.o ./src/transformer.o ./src/translator.o
+	$(CC) $(CFLAGS) $(INCLUDES) ./src/main.o ./src/tokenizer.o ./src/transformer.o ./src/translator.o -o mersh
 
 tokenizer: ./src/tokenizer.o
 	$(CC) $(CFLAGS) $(INCLUDES) ./src/tokenizer.o -o tokenizer
