@@ -4,6 +4,12 @@
 #define TRANSFORMER_H
 
 typedef struct {
+    char *assigned_class;
+    char *identifier;
+    char modifier;
+} Property;
+
+typedef struct {
     Token originator;
     Token recipient;
     Token relation;
@@ -11,6 +17,8 @@ typedef struct {
 
 typedef struct {
     Token identifier;
+    int property_count;
+    Property *properties;
 } ClassDefinition;
 
 typedef struct {

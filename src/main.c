@@ -84,12 +84,12 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     
-    tokens_to_string(tokens);
+    // tokens_to_string(tokens);
 
     ClassExpressions exprs;
     transform(tokens, &exprs);
 
-    // class_exprs_to_string(&exprs);
+    class_exprs_to_string(&exprs);
 
     #ifdef _WIN32
     _mkdir("out");
