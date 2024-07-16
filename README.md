@@ -7,7 +7,7 @@
 
 Clone the repository:
 ```bash
-git clone https://github.com/ashtondunderdale/mersh.git
+git clone https://github.com/rxgq/mersh.git
 cd mersh
 ```
 
