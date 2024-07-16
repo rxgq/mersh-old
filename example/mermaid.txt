@@ -1,15 +1,4 @@
-class Animal {
+classDiagram
+    Organism <|-- Animal
 
-}
-
-class Animals {
-
-}
-
-class Duck {
     
-}
-
-class Cat {
-    
-}
