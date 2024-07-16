@@ -10,7 +10,7 @@ typedef struct {
 } ClassRelation;
 
 typedef struct {
-    Token class_identifier;
+    Token identifier;
 } ClassDefinition;
 
 void transform(Token *tokens);

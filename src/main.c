@@ -59,9 +59,6 @@ int main(int argc, char *argv[]) {
     
     for (int i = 0; tokens[i].value != NULL; i++) {
         printf("%d: (line %d) Type %s | '%s' %s\n", i, tokens[i].line, token_type_to_string(tokens[i].type), tokens[i].value, tokens[i].name);
-
-        free(tokens[i].value);
-        free(tokens[i].name);
     }
 
     transform(tokens);
