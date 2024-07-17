@@ -31,10 +31,9 @@ ClassExpressions* transform(Token *tokens, ClassExpressions *exprs) {
         // printf("Line %d\n", current_line);
 
         while (tokens[curr].name != NULL && tokens[curr].line == current_line) {
-            printf("   %d: Value: '%s' | Name: %s\n", curr, tokens[curr].value, tokens[curr].name);
+            // printf("   %d: Value: '%s' | Name: %s\n", curr, tokens[curr].value, tokens[curr].name);
 
             if (is_class_definition(tokens[curr])) {
-                printf("      This token is a class definition.\n\n");
 
                 ClassDefinition expr;
                 expr.identifier = tokens[curr + 1];
@@ -44,18 +43,7 @@ ClassExpressions* transform(Token *tokens, ClassExpressions *exprs) {
 
                 exprs->definitions[exprs->definition_count++] = expr;
             } 
-            else if (is_relation_definition(tokens[curr])) {
-                printf("      This token is a relation definition.\n\n");
-                
-                ClassRelation expr;
-                expr.originator = tokens[curr - 1];
-                expr.relation = tokens[curr];
-                expr.recipient = tokens[curr + 1];
-
-                exprs->relations[exprs->relation_count++] = expr;
-            } 
             else if (is_property(tokens[curr])) {
-                printf("      This token is a property definition.\n\n");
                 
                 Property prop;
                 prop.assigned_class = current_class;
@@ -66,10 +54,16 @@ ClassExpressions* transform(Token *tokens, ClassExpressions *exprs) {
                     exprs->definitions[exprs->definition_count - 1].properties[exprs->definitions[exprs->definition_count - 1].property_count++] = prop;
                 }
             }
-            else {
-                printf("      This token is an identifier.\n\n");
+            else if (is_relation_definition(tokens[curr])) {
+                
+                ClassRelation expr;
+                expr.originator = tokens[curr - 1];
+                expr.relation = tokens[curr];
+                expr.recipient = tokens[curr + 1];
 
-            }
+                exprs->relations[exprs->relation_count++] = expr;
+            } 
+
 
             curr++;
         }

@@ -39,9 +39,14 @@ void tokens_to_string(Token *tokens) {
 }
 
 void class_exprs_to_string(ClassExpressions *exprs) {
-    printf("Class Definitions:\n");
-    for (int i = 0; i < exprs->definition_count; i++) {
-        printf("  Definition %d: %s\n", i + 1, exprs->definitions[i].identifier.value);
+    printf("Class Definitions:");
+    for (int i = 0; i < exprs->definition_count; ++i) {
+        ClassDefinition def = exprs->definitions[i];
+        printf("\n  Definition %d: %s\n", i + 1, def.identifier.value);
+        for (int j = 0; j < def.property_count; ++j) {
+            Property prop = def.properties[j];
+            printf("    Property: %s %c %s\n", prop.assigned_class, prop.modifier, prop.identifier);
+        }
     }
 
     printf("\nClass Relations:\n");
@@ -54,7 +59,7 @@ int main(int argc, char *argv[]) {
     if (argc < 2) {
         printf("Usage: %s <filename>\n", argv[0]);
         return 1;
-    }  
+    }
 
     FILE *fptr = fopen(argv[1], "r");
     if (fptr == NULL) {
@@ -83,10 +88,11 @@ int main(int argc, char *argv[]) {
         free(buff);
         return 1;
     }
-    
+
     // tokens_to_string(tokens);
 
     ClassExpressions exprs;
+
     transform(tokens, &exprs);
 
     class_exprs_to_string(&exprs);
