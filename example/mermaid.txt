@@ -1,6 +1,8 @@
 class Dog {
     +int age
-    ~bool isAlive
+    +int age2*
+    ~bool isAlive$
 
-    +bool test()
+    +bool test()*
+    +bool test()$
 }

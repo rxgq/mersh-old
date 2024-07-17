@@ -24,7 +24,16 @@ int is_method(const char *str) {
     if (len < 2) {
         return 0;
     }
-    return (str[len - 2] == '(' && str[len - 1] == ')');
+
+    return ((str[len - 2] == '(' && str[len - 1] == ')') || (str[len - 3] == '(' && str[len - 2] == ')'));
+}
+
+int is_static(const char *str) {
+    return (str[strlen(str) - 1] == '$');
+}
+
+int is_abstract(const char *str) {
+    return (str[strlen(str) - 1] == '*');
 }
 
 void write_class(ClassDefinition class_def) {
@@ -42,9 +51,27 @@ void write_class(ClassDefinition class_def) {
         Property prop = class_def.properties[i];
         const char *modifier_str = modifier_to_string(prop.modifier);
 
-        if (is_method(prop.identifier)) {
-            fprintf(fptr, "    %s %s {\n\n\t}\n", modifier_str, prop.identifier + 1);
-        } else {
+        if (is_static(prop.identifier)) {
+            int len = strlen(prop.identifier);
+            prop.identifier[len-1] = '\0';
+            
+            if (is_method(prop.identifier)) {
+                fprintf(fptr, "    %s static %s {\n\n\t}\n", modifier_str, prop.identifier + 1);
+            } else {
+                fprintf(fptr, "    %s static %s { get; set; }\n", modifier_str, prop.identifier + 1);
+            }
+        } 
+        else if (is_abstract(prop.identifier)) {
+            int len = strlen(prop.identifier);
+            prop.identifier[len-1] = '\0';
+
+            if (is_method(prop.identifier)) {
+                fprintf(fptr, "    %s abstract %s {\n\n\t}\n", modifier_str, prop.identifier + 1);
+            } else {
+                fprintf(fptr, "    %s abstract %s { get; set; }\n", modifier_str, prop.identifier + 1);
+            }
+        }
+        else {
             fprintf(fptr, "    %s %s { get; set; }\n", modifier_str, prop.identifier + 1);
         }
 
