@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // tokens_to_string(tokens);
+    tokens_to_string(tokens);
 
     ClassExpressions exprs;
 

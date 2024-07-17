@@ -64,7 +64,6 @@ ClassExpressions* transform(Token *tokens, ClassExpressions *exprs) {
                 exprs->relations[exprs->relation_count++] = expr;
             } 
 
-
             curr++;
         }
 

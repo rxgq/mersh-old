@@ -142,7 +142,7 @@ void on_relation(int *curr, char* tok, Token* tokens, int *count, int tok_line) 
 
 void on_attribute(int *curr, char* tok, Token* tokens, int *count, int tok_line) {
     int start = *curr;
-    enum TokenType type = tok[*curr] == '+' ? PROPERTY : PROPERTY;
+    enum TokenType type = PROPERTY;
 
     while (tok[*curr] != '\0' && tok[*curr] != '\n' && tok[*curr] != '\r') {
         (*curr)++;
@@ -179,7 +179,7 @@ void tokenize_line(Token *tokens, char *line, int *count, int tok_line, char* so
     }
 
     int curr = 0;
-    if (tok[curr] == '+' || tok[curr] == '-') {
+    if (tok[curr] == '+' || tok[curr] == '-' || tok[curr] == '~' || tok[curr] == '#') {
         on_attribute(&curr, tok, tokens, count, tok_line);
     }
     else {

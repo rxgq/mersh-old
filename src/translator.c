@@ -8,9 +8,19 @@ int file_exists(FILE *fptr) {
     return sz == 0 ? 0 : 1;
 }
 
-void write_class(Token token) {
+const char* modifier_to_string(char modifier) {
+    switch (modifier) {
+        case '+': return "public";
+        case '-': return "private";
+        case '#': return "protected";
+        case '~': return "internal";
+        default:  return "";
+    }
+}
+
+void write_class(ClassDefinition class_def) {
     char filename[256];
-    snprintf(filename, sizeof(filename), "out/%s.cs", token.name);
+    snprintf(filename, sizeof(filename), "out/%s.cs", class_def.identifier.value);
 
     FILE *fptr = fopen(filename, "w");
     if (fptr == NULL) {
@@ -18,12 +28,14 @@ void write_class(Token token) {
         return;
     }
 
-    if (file_exists(fptr) == 0) {
-        fprintf(fptr, "public class %s {\n\n}\n", token.name);
-    } else {
-        //fseek(fptr, -2, SEEK_END);
-        //fprintf(fptr, "\n}\n");
+    fprintf(fptr, "public class %s {\n", class_def.identifier.value);
+    for (int i = 0; i < class_def.property_count; ++i) {
+        Property prop = class_def.properties[i];
+        const char *modifier_str = modifier_to_string(prop.modifier);
+
+        fprintf(fptr, "    %s %s { get; set; }\n", modifier_str, prop.identifier + 1);
     }
+    fprintf(fptr, "}\n");
 
     fclose(fptr);
 }
@@ -65,7 +77,7 @@ void write_relation(ClassRelation *relation) {
 
 void translate(ClassExpressions *exprs) {
     for (int i = 0; i < exprs->definition_count; i++) {
-        write_class(exprs->definitions[i].identifier);
+        write_class(exprs->definitions[i]);
     }
 
     for (int i = 0; i < exprs->relation_count; i++) {

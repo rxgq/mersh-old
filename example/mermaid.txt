@@ -1,27 +1,4 @@
-class Animal {
-  +int age
-  -bool isAlive
-  -bool isAlive
-}
-
-
-class Frog {
-  -bool isAlivae
-  +int age
-}
-
-
-class Animal {
-  -bool isAlive
-}
-
-
-
-class Animal {
-}
-
-
-
-class Animal {
-  +int age
+class Dog {
+    +int age
+    ~bool isAlive
 }
