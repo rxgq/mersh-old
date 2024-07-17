@@ -39,6 +39,7 @@ ClassExpressions* transform(Token *tokens, ClassExpressions *exprs) {
                 ClassDefinition expr;
                 expr.identifier = tokens[curr + 1];
                 expr.property_count = 0;
+                expr.properties = malloc(32 * sizeof(Property));
                 strcpy(current_class, tokens[curr + 1].value);
 
                 exprs->definitions[exprs->definition_count++] = expr;
@@ -62,7 +63,7 @@ ClassExpressions* transform(Token *tokens, ClassExpressions *exprs) {
                 prop.modifier = tokens[curr].name[0];
 
                 if (exprs->definition_count > 0) {
-                    // exprs->definitions[exprs->definition_count - 1].properties[exprs->definitions[exprs->definition_count - 1].property_count++] = prop;
+                    exprs->definitions[exprs->definition_count - 1].properties[exprs->definitions[exprs->definition_count - 1].property_count++] = prop;
                 }
             }
             else {
@@ -79,5 +80,6 @@ ClassExpressions* transform(Token *tokens, ClassExpressions *exprs) {
         }
     }
 
+    free(current_class);
     return exprs;
 }
