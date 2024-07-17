@@ -72,7 +72,11 @@ void write_class(ClassDefinition class_def) {
             }
         }
         else {
-            fprintf(fptr, "    %s %s { get; set; }\n", modifier_str, prop.identifier + 1);
+            if (is_method(prop.identifier)) {
+                fprintf(fptr, "    %s %s {\n\n\t}\n", modifier_str, prop.identifier + 1);
+            } else {
+                fprintf(fptr, "    %s %s { get; set; }\n", modifier_str, prop.identifier + 1);
+            }
         }
 
     }

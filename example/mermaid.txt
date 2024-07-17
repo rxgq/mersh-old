@@ -1,8 +1,13 @@
-class Dog {
-    +int age
-    +int age2*
-    ~bool isAlive$
-
-    +bool test()*
-    +bool test()$
-}
+    class Duck{
+        +String beakColor
+        +s swim()
+        +s quack()
+    }
+    class Fish{
+        -int sizeInFeet
+        -canEat()
+    }
+    class Zebra{
+        +bool is_wild
+        +run()
+    }
