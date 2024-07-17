@@ -1,13 +1,7 @@
     class Duck{
-        +String beakColor
-        +s swim()
-        +s quack()
-    }
-    class Fish{
-        -int sizeInFeet
-        -canEat()
-    }
-    class Zebra{
-        +bool is_wild
-        +run()
+        +string beakColor*
+        +swim()$
+        +string quack()*
+        +swim()
+        +int test*
     }

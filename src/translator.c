@@ -51,44 +51,94 @@ void write_class(ClassDefinition class_def) {
         Property prop = class_def.properties[i];
         const char *modifier_str = modifier_to_string(prop.modifier);
 
+
         if (is_static(prop.identifier)) {
             int len = strlen(prop.identifier);
             prop.identifier[len-1] = '\0';
-            
+
             if (is_method(prop.identifier)) {
-                fprintf(fptr, "    %s static %s {\n\n\t}\n", modifier_str, prop.identifier + 1);
+                char *method_name = prop.identifier + 1;
+                char *return_type = "void";
+                
+                int len = strlen(method_name);
+                if (method_name[len - 1] == ')') {
+                    char *last_space = strrchr(method_name, ' ');
+                    if (last_space != NULL && last_space < method_name + len - 2) {
+                        return_type = last_space + 1;
+                        last_space[0] = '\0';
+                    }
+                }
+
+                if (strcmp(return_type, "void") == 0) {
+                    fprintf(fptr, "    %s static %s %s {\n\n\t}\n", modifier_str, return_type, method_name);
+
+                } else {
+                    fprintf(fptr, "    %s static %s %s {\n\n\t}\n", modifier_str, method_name, return_type);
+                }
+
             } else {
                 fprintf(fptr, "    %s static %s { get; set; }\n", modifier_str, prop.identifier + 1);
             }
-        } 
+        }
         else if (is_abstract(prop.identifier)) {
             int len = strlen(prop.identifier);
             prop.identifier[len-1] = '\0';
 
             if (is_method(prop.identifier)) {
-                fprintf(fptr, "    %s abstract %s {\n\n\t}\n", modifier_str, prop.identifier + 1);
+                char *method_name = prop.identifier + 1;
+                char *return_type = "void";
+                
+                int len = strlen(method_name);
+                if (method_name[len - 1] == ')') {
+                    char *last_space = strrchr(method_name, ' ');
+                    if (last_space != NULL && last_space < method_name + len - 2) {
+                        return_type = last_space + 1;
+                        last_space[0] = '\0';
+                    }
+                }
+
+                if (strcmp(return_type, "void") == 0) {
+                    fprintf(fptr, "    %s abstract %s %s {\n\n\t}\n", modifier_str, return_type, method_name);
+
+                } else {
+                    fprintf(fptr, "    %s abstract %s %s {\n\n\t}\n", modifier_str, method_name, return_type);
+                }
+
             } else {
                 fprintf(fptr, "    %s abstract %s { get; set; }\n", modifier_str, prop.identifier + 1);
             }
         }
         else {
             if (is_method(prop.identifier)) {
-                fprintf(fptr, "    %s %s {\n\n\t}\n", modifier_str, prop.identifier + 1);
+                char *method_name = prop.identifier + 1;
+                char *return_type = "void";
+                
+                int len = strlen(method_name);
+                if (method_name[len - 1] == ')') {
+                    char *last_space = strrchr(method_name, ' ');
+                    if (last_space != NULL && last_space < method_name + len - 2) {
+                        return_type = last_space + 1;
+                        last_space[0] = '\0';
+                    }
+                }
+
+                if (strcmp(return_type, "void") == 0) {
+                    fprintf(fptr, "    %s %s %s {\n\n\t}\n", modifier_str, return_type, method_name);
+
+                } else {
+                    fprintf(fptr, "    %s %s %s {\n\n\t}\n", modifier_str, method_name, return_type);
+                }
+
             } else {
                 fprintf(fptr, "    %s %s { get; set; }\n", modifier_str, prop.identifier + 1);
             }
         }
-
     }
     fprintf(fptr, "}\n");
 
     fclose(fptr);
 }
 
-// <|-- Inheritance: ClassA : ClassB
-// *-- Composition: ClassA has-a ClassB: snytax: Bird *-- Feathers 
-// o-- Aggregation: syntactically equivalent to Composition (The difference being aggregated classes can exist independently)
-// others are irrelevant 
 void write_relation(ClassRelation *relation) {
     char filename[256];
 
