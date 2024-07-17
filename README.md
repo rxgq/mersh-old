@@ -1,7 +1,12 @@
 ## Get Started
 
+> [!NOTE]  
+> Discontinued. I'll probably re-write in C#
+
+<br>
+
 > [!WARNING]  
-> This project _is_ usable (buggy) but also a work in progress
+> This project _is_ usable but also a work in progress
 > 
 <br>
 
