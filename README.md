@@ -1,7 +1,7 @@
 ## Get Started
 
 > [!WARNING]  
-> This project is unfinished, i would not recommend using it right now.
+> This project _is_ usable (buggy) but also a work in progress
 > 
 <br>
 
@@ -31,4 +31,49 @@ Provide the path of your mermaid script to the executable.
 
 <br>
 
-It will output the generated classes in the `./out` directory.
+It will output the generated classes in an `./out` directory.
+
+<br>
+
+Original Class Definition:
+
+ ```
+class Duck{
+    +string BeakColor
+    +int Weight
+    -bool IsAlive
+    -int Age
+
+    +Migrate()$
+    +Swim()
+    +string Quack()*
+}
+```
+
+<br>
+
+Generated Class:
+
+```csharp
+public class Duck {
+    public string BeakColor { get; set; }
+
+    public int Weight { get; set; }
+
+    private bool IsAlive { get; set; }
+
+    private int Age { get; set; }
+
+    public static void Migrate() {
+
+    }
+
+    public void Swim() {
+
+    }
+
+    public abstract string Quack() {
+
+    }
+}
+```
