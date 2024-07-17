@@ -1,4 +1,6 @@
 class Dog {
     +int age
     ~bool isAlive
+
+    +bool test()
 }

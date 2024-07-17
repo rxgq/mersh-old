@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "translator.h"
+#include <string.h>
 
 int file_exists(FILE *fptr) {
     fseek(fptr, 0, SEEK_END);
@@ -18,6 +19,14 @@ const char* modifier_to_string(char modifier) {
     }
 }
 
+int is_method(const char *str) {
+    size_t len = strlen(str);
+    if (len < 2) {
+        return 0;
+    }
+    return (str[len - 2] == '(' && str[len - 1] == ')');
+}
+
 void write_class(ClassDefinition class_def) {
     char filename[256];
     snprintf(filename, sizeof(filename), "out/%s.cs", class_def.identifier.value);
@@ -33,7 +42,12 @@ void write_class(ClassDefinition class_def) {
         Property prop = class_def.properties[i];
         const char *modifier_str = modifier_to_string(prop.modifier);
 
-        fprintf(fptr, "    %s %s { get; set; }\n", modifier_str, prop.identifier + 1);
+        if (is_method(prop.identifier)) {
+            fprintf(fptr, "    %s %s {\n\n\t}\n", modifier_str, prop.identifier + 1);
+        } else {
+            fprintf(fptr, "    %s %s { get; set; }\n", modifier_str, prop.identifier + 1);
+        }
+
     }
     fprintf(fptr, "}\n");
 
